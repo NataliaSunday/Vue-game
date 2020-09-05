@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game in Vue</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <section class="welcomeScreen" v-show="playGame">
+            <button class="btn btnStart" @click="playGame = !playGame">Start Game</button>
+        </section>
+        <section v-show="!playGame">
+            <section class="character">
+                <section class="hero">
+                    <h1 class="heading">Hero</h1>
+                    <img src="hero.png" alt="hero image">
+                    <paragraph> {{ lifeHero }} pkt </paragraph>
+                    <div class="life" v-bind:style="lifeHeroBar"></div>
+                </section>
+                <section class="monster">
+                    <h1 class="heading">Monster</h1>
+                    <img src="monster.png" alt="monster image">
+                    <paragraph> {{ lifeMonster }} pkt</paragraph>
+                    <div class="life" v-bind:style="lifeMonsterBar"></div>
+                </section>
+            </section>
+            <article>
+                <p class="history">{{ action }}</p>
+            </article>
+            <section class="skills">
+                <button class="btn" @click="attack(); myTurn = !myTurn;">Attack</button>
+                <button class="btn" @click="specialAttack(); myTurn = !myTurn;">Special attack</button>
+                <button class="btn" @click="heal(); myTurn = !myTurn;">Heal</button>
+                <button class="btn" @click="playGame = !playGame">Surrender</button>
+            </section>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                playGame: true,
+                action: '',
+                myTurn: true,
+                lifeHero: 100,
+                lifeMonster: 100,
+                lifeHeroBar: {
+                    width: '100%',
+                    height: '30px',
+                    backgroundColor: 'yellowgreen',
+                    alignSelf: 'flex-start',
+                },
+                lifeMonsterBar: {
+                    width: '100%',
+                    height: '30px',
+                    backgroundColor: 'yellowgreen',
+                    alignSelf: 'flex-start',
+                },
+            },
+            methods: {
+                attack: function () {
+                    let vm = this;
+                    let force = Math.floor(Math.random() * 10) + 5;
+                    vm.lifeMonster = vm.lifeMonster - force;
+                    vm.lifeMonsterBar.width = vm.lifeMonster + '%';
+                    vm.action = 'Uderzyłeś za: ' + force + 'pkt.';
+
+                },
+
+                specialAttack: function () {
+                    let vm = this;
+                    let force = Math.floor(Math.random() * 20) + 10;
+                    vm.lifeMonster = vm.lifeMonster - force;
+                    vm.lifeMonsterBar.width = vm.lifeMonster + '%';
+                    vm.action = 'Uderzyłeś za: ' + force + 'pkt.';
+                },
+
+                heal: function () {
+                    let vm = this;
+                    let force = 15;
+                    vm.lifeHero = vm.lifeHero + force;
+                    vm.lifeHeroBar.width = vm.lifeHero + '%';
+                    vm.action = 'Wyleczyłeś się za: ' + force + 'pkt.';
+                },
+            },
+            watch: {
+                myTurn: function () {
+
+                    let drawAction = Math.floor(Math.random() * 6);
+                    console.log(drawAction);
+
+                    if ((drawAction == 0) || (drawAction == 1) || (drawAction == 2)) {
+                        let vm = this;
+                        let force = Math.floor(Math.random() * 10) + 5;
+                        vm.lifeHero = vm.lifeHero - force;
+                        setTimeout(function () {
+                            vm.lifeHeroBar.width = vm.lifeHero + '%';
+                            vm.action = 'Zostałeś uderzony za: ' + force + 'pkt.';
+                        }, 500)
+
+
+                    } else if ((drawAction == 3) || (drawAction == 4)) {
+                        let vm = this;
+                        let force = Math.floor(Math.random() * 20) + 10;
+                        vm.lifeHero = vm.lifeHero - force;
+                        setTimeout(function () {
+                            vm.lifeHeroBar.width = vm.lifeHero + '%';
+                            vm.action = 'Zostałeś uderzony za: ' + force + 'pkt.';
+                        }, 500)
+
+
+                    } else if (drawAction == 5) {
+                        let vm = this;
+                        let force = 15;
+                        vm.lifeMonster = vm.lifeMonster + force;
+                        setTimeout(function () {
+                            vm.lifeMonsterBar.width = vm.lifeMonster + '%';
+                            vm.action = 'Przeciwnik uleczył się za: ' + force + 'pkt.';
+                        }, 500)
+                    }
+                },
+                playGame: function () {
+                    let vm = this;
+                    vm.lifeHero = 100;
+                    vm.lifeMonster = 100;
+                    vm.lifeHeroBar.width = '100%';
+                    vm.lifeMonsterBar.width = '100%';
+                    vm.action = '';
+                },
+                lifeHero: function () {
+                    let vm = this;
+                    if (vm.lifeHero <= 0) {
+                        setTimeout(function () {
+                            vm.playGame = !vm.playGame;
+                            alert('You lost :(');
+                        }, 500);
+                    }
+                },
+                monsterHero: function () {
+                    let vm = this;
+                    setTimeout(function () {
+                        if (vm.monsterHero <= 0) {
+                            vm.playGame = !vm.playGame;
+                            alert('Yeah!You won!');
+                        }
+                    }, 500);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
