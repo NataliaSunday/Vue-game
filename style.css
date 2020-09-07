@@ -13,8 +13,11 @@
     justify-content: center;
     align-items: center;
 }
+section{
+    margin: 30px 0;
+}
 .character{
-    margin: 0 auto;
+    margin: 30px auto;
     width: 80%;
     height: 20%;
     display: flex;
@@ -34,7 +37,13 @@
     color: white;
     margin: 0 5px;
 }
-
+.life{
+    height: 30px;
+    background-color: yellowgreen;
+    align-self: flex-start;
+    width: 100%;
+    transition: width .5s ease;
+}
 /*.lifeHero::after{
     content: '';
     position: absolute;
@@ -66,13 +75,17 @@
     font-size: 125%;
     cursor: pointer;
 }
-.history{
+.actionList{
     width: 80%;
-    height: auto;
+    max-height: 60px;
+    min-height: 60px;
+    overflow-y: scroll;
     margin: 0 auto;
-    color: white;
     text-align: center;
     padding: 10px 0;
+}
+.actionListItem{
+    color: white;
 }
 .welcomeScreen{
   display: flex;

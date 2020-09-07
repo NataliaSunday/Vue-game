@@ -19,23 +19,25 @@
                     <h1 class="heading">Hero</h1>
                     <img src="hero.png" alt="hero image">
                     <paragraph> {{ lifeHero }} pkt </paragraph>
-                    <div class="life" v-bind:style="lifeHeroBar"></div>
+                    <div class="life" :style="{width: lifeHero + '%'}"></div>
                 </section>
                 <section class="monster">
                     <h1 class="heading">Monster</h1>
                     <img src="monster.png" alt="monster image">
                     <paragraph> {{ lifeMonster }} pkt</paragraph>
-                    <div class="life" v-bind:style="lifeMonsterBar"></div>
+                    <div class="life" :style="{width: lifeMonster + '%'}"></div>
                 </section>
             </section>
-            <article>
-                <p class="history">{{ action }}</p>
-            </article>
             <section class="skills">
                 <button class="btn" @click="attack(); myTurn = !myTurn;">Attack</button>
                 <button class="btn" @click="specialAttack(); myTurn = !myTurn;">Special attack</button>
                 <button class="btn" @click="heal(); myTurn = !myTurn;">Heal</button>
                 <button class="btn" @click="playGame = !playGame">Surrender</button>
+            </section>
+            <section>
+                <ul class="actionList">
+                    <li class="actionListItem" v-for="info in action">{{ info }}</li>
+                </ul>
             </section>
         </section>
     </div>
@@ -47,111 +49,83 @@
             el: "#app",
             data: {
                 playGame: true,
-                action: '',
+                action: [],
                 myTurn: true,
                 lifeHero: 100,
                 lifeMonster: 100,
-                lifeHeroBar: {
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: 'yellowgreen',
-                    alignSelf: 'flex-start',
-                },
-                lifeMonsterBar: {
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: 'yellowgreen',
-                    alignSelf: 'flex-start',
-                },
             },
             methods: {
                 attack: function () {
-                    let vm = this;
-                    let force = Math.floor(Math.random() * 10) + 5;
-                    vm.lifeMonster = vm.lifeMonster - force;
-                    vm.lifeMonsterBar.width = vm.lifeMonster + '%';
-                    vm.action = 'Uderzyłeś za: ' + force + 'pkt.';
+                    let force = this.calculateDamage(5, 10);
+                    this.lifeMonster = this.lifeMonster - force;
+                    this.action.unshift(`Uderzyłeś za: ${force}pkt.`);
 
                 },
 
                 specialAttack: function () {
-                    let vm = this;
-                    let force = Math.floor(Math.random() * 20) + 10;
-                    vm.lifeMonster = vm.lifeMonster - force;
-                    vm.lifeMonsterBar.width = vm.lifeMonster + '%';
-                    vm.action = 'Uderzyłeś za: ' + force + 'pkt.';
+                    let force = this.calculateDamage(10, 20);
+                    this.lifeMonster = this.lifeMonster - force;
+                    this.action.unshift(`Uderzyłeś za: ${force}pkt.`);
+
                 },
 
                 heal: function () {
-                    let vm = this;
                     let force = 15;
-                    vm.lifeHero = vm.lifeHero + force;
-                    vm.lifeHeroBar.width = vm.lifeHero + '%';
-                    vm.action = 'Wyleczyłeś się za: ' + force + 'pkt.';
+                    if (this.lifeHero > 85) {
+                        this.lifeHero = 100;
+                    } else {
+                        this.lifeHero = this.lifeHero + force;
+                    }
+                    this.action.unshift(`Wyleczyłeś się za: ${force}pkt.`);
+           
+                },
+                calculateDamage: function (min, max) {
+                    return Math.floor(Math.random() * max) + min;
                 },
             },
             watch: {
                 myTurn: function () {
 
-                    let drawAction = Math.floor(Math.random() * 6);
-                    console.log(drawAction);
+                    let drawAction = Math.floor(Math.random() * 100);
 
-                    if ((drawAction == 0) || (drawAction == 1) || (drawAction == 2)) {
-                        let vm = this;
-                        let force = Math.floor(Math.random() * 10) + 5;
-                        vm.lifeHero = vm.lifeHero - force;
-                        setTimeout(function () {
-                            vm.lifeHeroBar.width = vm.lifeHero + '%';
-                            vm.action = 'Zostałeś uderzony za: ' + force + 'pkt.';
-                        }, 500)
+                    if (drawAction < 50) {
+                        let force = this.calculateDamage(5, 10);
+                        this.lifeHero = this.lifeHero - force;
+                        this.action.unshift(`Zostałeś uderzony za: ${force}pkt.`);
 
+                    } else if ((drawAction >= 50) && (drawAction <= 80)) {
+                        let force = this.calculateDamage(10, 20);
+                        this.lifeHero = this.lifeHero - force;
+                        this.action.unshift(`Zostałeś uderzony za: ${force}pkt.`);
 
-                    } else if ((drawAction == 3) || (drawAction == 4)) {
-                        let vm = this;
-                        let force = Math.floor(Math.random() * 20) + 10;
-                        vm.lifeHero = vm.lifeHero - force;
-                        setTimeout(function () {
-                            vm.lifeHeroBar.width = vm.lifeHero + '%';
-                            vm.action = 'Zostałeś uderzony za: ' + force + 'pkt.';
-                        }, 500)
-
-
-                    } else if (drawAction == 5) {
-                        let vm = this;
+                    } else if (drawAction > 80) {
                         let force = 15;
-                        vm.lifeMonster = vm.lifeMonster + force;
-                        setTimeout(function () {
-                            vm.lifeMonsterBar.width = vm.lifeMonster + '%';
-                            vm.action = 'Przeciwnik uleczył się za: ' + force + 'pkt.';
-                        }, 500)
+                        if (this.lifeMonster < 85) {
+                            this.lifeMonster = this.lifeMonster + force;
+                        } else {
+                            this.lifeMonster = 100;
+                        }
+                        this.action.unshift(`Przeciwnik uleczył się za: ${force}pkt.`);
+
                     }
                 },
                 playGame: function () {
-                    let vm = this;
-                    vm.lifeHero = 100;
-                    vm.lifeMonster = 100;
-                    vm.lifeHeroBar.width = '100%';
-                    vm.lifeMonsterBar.width = '100%';
-                    vm.action = '';
+                    this.lifeHero = 100;
+                    this.lifeMonster = 100;
+                    this.action = [];
                 },
                 lifeHero: function () {
-                    let vm = this;
-                    if (vm.lifeHero <= 0) {
-                        setTimeout(function () {
-                            vm.playGame = !vm.playGame;
-                            alert('You lost :(');
-                        }, 500);
-                    }
-                },
-                monsterHero: function () {
-                    let vm = this;
-                    setTimeout(function () {
-                        if (vm.monsterHero <= 0) {
-                            vm.playGame = !vm.playGame;
-                            alert('Yeah!You won!');
-                        }
-                    }, 500);
+                    if (this.lifeHero <= 0) {
+                        this.playGame = !this.playGame;
+                        alert('You lost :(');
                 }
+                },
+                lifeMonster: function () {
+                    if (this.lifeMonster <= 0) {
+                        this.playGame = !this.playGame;
+                        alert('You won');
+                }
+            }
             }
         })
     </script>
